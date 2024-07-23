@@ -1,15 +1,14 @@
-microps
-=======
+# microps
 
 microps is an implementation of a small TCP/IP protocol stack for learning.
 
-+ If you love the Go language: https://github.com/pandax381/lectcp
-+ Porting to xv6: https://github.com/pandax381/xv6-net
-+ Porting to MikanOS: https://github.com/pandax381/mikanos-net
+- If you love the Go language: https://github.com/pandax381/lectcp
+- Porting to xv6: https://github.com/pandax381/xv6-net
+- Porting to MikanOS: https://github.com/pandax381/mikanos-net
 
 Documents
 
-+ [Step by Step Development Guides](https://drive.google.com/drive/folders/1k2vymbC3vUk5CTJbay4LLEdZ9HemIpZe) (Japanese) 
+- [Step by Step Development Guides](https://drive.google.com/drive/folders/1k2vymbC3vUk5CTJbay4LLEdZ9HemIpZe) (Japanese)
 
 ## Features
 
@@ -192,7 +191,7 @@ $ ./app/tcps.exe 7
 
 #### 4. Test (Operate in another terminal)
 
-+ Ping
+- Ping
 
 ```
 $ ping 192.0.2.2
@@ -203,7 +202,8 @@ PING 192.0.2.2 (192.0.2.2) 56(84) bytes of data.
 ...
 ```
 
-+ TCP communication
+- TCP communication
+
 ```
 $ nc 192.0.2.2 7
 foo
@@ -213,6 +213,84 @@ bar
 ```
 
 > Sending text will be sent back by the Echo Server.
+
+<details><summary><b>Tutorial with Docker</b></summary>
+<p>
+
+## Tutorial with Docker
+
+### 0. Build Dokcer image and run Docker Compose service
+
+```sh
+git clone https://github.com/ajfAfg/microps.git
+cd microps
+docker compose build microps
+docker compose run microps
+```
+
+### 1. Build
+
+```sh
+make
+```
+
+### 2. Prepare Tap device
+
+```sh
+ip tuntap add mode tap user "$(whoami)" name tap0
+ip addr add 192.0.2.1/24 dev tap0
+ip link set tap0 up
+```
+
+> It is temporary and will disappear after reboot.
+
+### 3. Run sample application
+
+```sh
+$ ./app/tcps.exe 192.0.2.2 7
+11:48:55.884 [I] net_protocol_register: registerd, type=ARP(0x0806) (net.c:223)
+11:48:55.884 [I] net_timer_register: registerd: ARP Timer interval={1, 0} (net.c:257)
+11:48:55.884 [I] net_protocol_register: registerd, type=IP(0x0800) (net.c:223)
+...
+11:48:55.884 [D] net_run: running... (net.c:324)
+11:48:55.884 [D] tcp_bind: success: addr=0.0.0.0, port=7 (tcp.c:1156)
+```
+
+> TCP Echo Server start on port 7. (default address is 192.0.2.2/24)
+
+### 4. Test (Operate in another terminal)
+
+- Login microps container
+
+```sh
+docker compose exec microps /bin/bash
+```
+
+- Ping
+
+```sh
+$ ping 192.0.2.2
+PING 192.0.2.2 (192.0.2.2) 56(84) bytes of data.
+64 bytes from 192.0.2.2: icmp_seq=1 ttl=255 time=0.660 ms
+64 bytes from 192.0.2.2: icmp_seq=2 ttl=255 time=0.688 ms
+64 bytes from 192.0.2.2: icmp_seq=3 ttl=255 time=0.574 ms
+...
+```
+
+- TCP communication
+
+```sh
+$ nc -v 192.0.2.2 7
+hoge
+hoge
+fuga
+fuga
+```
+
+> Sending text will be sent back by the Echo Server.
+
+</p>
+</details>
 
 ## License
 
