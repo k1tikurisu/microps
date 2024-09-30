@@ -6,6 +6,7 @@ APPS = app/udpc.exe \
 TESTS = test/test.exe \
         test/step0.exe \
         test/step1.exe \
+        test/step2.exe \
 
 DRIVERS = driver/null.o \
           driver/loopback.o \
